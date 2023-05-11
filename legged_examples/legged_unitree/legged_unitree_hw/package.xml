@@ -11,6 +11,8 @@
     <buildtool_depend>catkin</buildtool_depend>
 
     <build_depend>cmake_clang_tools</build_depend>
+    <depend>ocs2_legged_robot</depend>
+    <depend>legged_estimation</depend>
     <depend>roscpp</depend>
     <depend>legged_hw</depend>
 </package>

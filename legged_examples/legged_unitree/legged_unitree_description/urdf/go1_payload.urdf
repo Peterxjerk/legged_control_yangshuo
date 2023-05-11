@@ -221,15 +221,15 @@
 
   <!-- add a payload link for computer and onboard battery -->
   <joint name="unitree_payload_joint" type="fixed">
-    <origin rpy="0. 0. 0." xyz="0.08 0. 0.11" />
+    <origin rpy="0. 0. 0." xyz="0.10 0. 0.11" />
     <parent link="base" />
     <child link="unitree_payload" />
   </joint>
   <link name="unitree_payload">
     <inertial>
-      <mass value="2" />
+      <mass value="2.5" />
       <origin rpy="0 0 0" xyz="0 0 0" />
-      <inertia ixx="0.003" ixy="0" ixz="0" iyy="0.008" iyz="0" izz="0.008" />
+      <inertia ixx="0.00416" ixy="0" ixz="0" iyy="0.01041" iyz="0" izz="0.01041" />
     </inertial>
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0" />

@@ -7,12 +7,16 @@ find_package(catkin REQUIRED
         COMPONENTS
         roscpp
         legged_hw
+        ocs2_legged_robot
+        legged_estimation
         )
 
 catkin_package(
         INCLUDE_DIRS
         include
         CATKIN_DEPENDS
+        ocs2_legged_robot
+        legged_estimation
         roscpp
         legged_hw
 )

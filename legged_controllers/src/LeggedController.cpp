@@ -10,6 +10,7 @@
 #include <ocs2_centroidal_model/CentroidalModelPinocchioMapping.h>
 #include <ocs2_core/thread_support/ExecuteAndSleep.h>
 #include <ocs2_core/thread_support/SetThreadPriority.h>
+#include <ocs2_legged_robot/gait/MotionPhaseDefinition.h>
 #include <ocs2_legged_robot_ros/gait/GaitReceiver.h>
 #include <ocs2_msgs/mpc_observation.h>
 #include <ocs2_pinocchio_interface/PinocchioEndEffectorKinematics.h>
@@ -115,6 +116,30 @@ void LeggedController::update(const ros::Time& time, const ros::Duration& period
 
   // Whole body control
   currentObservation_.input = optimizedInput;
+
+  // input gait stance time to wbc_
+  double total_stance_time[4] = {0.0, 0.0, 0.0, 0.0};
+  int total_stance_phases[4] = {0, 0, 0, 0};
+
+  ModeSchedule mode = leggedInterface_->getReferenceManagerPtr()->getModeSchedule();
+  for (int i = 1; i < mode.eventTimes.size(); i++) {
+    contact_flag_t stanceLegs = modeNumber2StanceLeg(mode.modeSequence[i - 1]);
+    for (int j = 0; j < 4; j++) {
+      if (stanceLegs[j] == true) {
+        total_stance_phases[j]++;
+        total_stance_time[j] += mode.eventTimes[i] - mode.eventTimes[i - 1];
+      }
+    }
+  }
+
+  double average_stance_time[4] = {0.0, 0.0, 0.0, 0.0};
+  for (int j = 0; j < 4; j++) {
+    if (total_stance_phases[j] != 0) {
+      average_stance_time[j] = total_stance_time[j] / total_stance_phases[j];
+    }
+  }
+
+  wbc_->setStanceTime(average_stance_time);
 
   wbcTimer_.startTimer();
   vector_t x = wbc_->update(optimizedState, optimizedInput, measuredRbdState_, plannedMode, period.toSec());

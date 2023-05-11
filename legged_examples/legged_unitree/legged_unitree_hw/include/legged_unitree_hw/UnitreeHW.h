@@ -13,6 +13,9 @@
 #include <sensor_msgs/JointState.h>
 #include <vector>
 
+#include <ocs2_legged_robot/common/Types.h>
+#include "legged_estimation/StateEstimateBase.h"
+
 #define NUM_DOF 12
 #define NUM_LEG 4
 

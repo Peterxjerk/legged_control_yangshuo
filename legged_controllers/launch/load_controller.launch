@@ -8,8 +8,8 @@
 
       <!-- make the files into global parameters -->
       <!-- <param name="urdfFile" value="/tmp/legged_control/$(arg robot_type).urdf" /> -->
-      <param name="urdfFile" value="$(find legged_unitree_description)/urdf/go1_payload.urdf"
-      />
+      <param name="urdfFile" value="$(find legged_unitree_description)/urdf/go1_payload.urdf" />
+      
       <!-- <param name="urdfFile" value="$(find legged_unitree_description)/urdf/go1.urdf" /> -->
       <param name="taskFile" value="$(find legged_controllers)/config/$(arg robot_type)/task.info" />
       <param name="referenceFile"
@@ -50,16 +50,20 @@
             output="screen" />
 
       <node pkg="rosbag" type="record" name="record"
-            args="record -o /home/ControlUser/legged_ctrl_ws/src/bags/ 
-            /WT901_47_Data 
-            /WT901_48_Data 
-            /WT901_49_Data 
-            /WT901_50_Data 
-            /mocap_node/Go1_body/pose
-            /mocap_node/Go1_FL/pose
-            /mocap_node/Go1_FR/pose
-            /camera_forward/infra2/image_rect_raw
-            /camera_forward/infra1/image_rect_raw
+            args="record -o /home/rexlabcmu/zixin_ws/bags/ 
+            /legged_robot/currentState
+            /legged_robot/desiredBaseTrajectory
+            /legged_robot/desiredFeetTrajectory/LF
+            /legged_robot/desiredFeetTrajectory/LH
+            /legged_robot/desiredFeetTrajectory/RF
+            /legged_robot/desiredFeetTrajectory/RH
+            /legged_robot/optimizedStateTrajectory
+            /legged_robot_mode_schedule
+            /legged_robot_mpc_mode_schedule
+            /legged_robot_mpc_observation
+            /legged_robot_mpc_target
+            /odom
+            /pose
             /unitree_hardware/imu
             /unitree_hardware/joint_foot
         " />

@@ -23,6 +23,7 @@ class WbcBase {
   WbcBase(const PinocchioInterface& pinocchioInterface, CentroidalModelInfo info, const PinocchioEndEffectorKinematics& eeKinematics);
 
   virtual void loadTasksSetting(const std::string& taskFile, bool verbose);
+  void setStanceTime(const double stance_time[]);
 
   virtual vector_t update(const vector_t& stateDesired, const vector_t& inputDesired, const vector_t& rbdStateMeasured, size_t mode,
                           scalar_t period);
@@ -49,6 +50,8 @@ class WbcBase {
   CentroidalModelPinocchioMapping mapping_;
 
   vector_t qMeasured_, vMeasured_, inputLast_;
+  vector_t qDesired_, vDesired_;
+  double average_stance_time[4];  // used in raibert strategy;
   matrix_t j_, dj_;
   contact_flag_t contactFlag_{};
   size_t numContacts_{};

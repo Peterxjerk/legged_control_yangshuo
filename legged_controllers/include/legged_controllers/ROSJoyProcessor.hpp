@@ -18,7 +18,7 @@
 #define JOY_CMD_PITCH_MAX 0.4         // rad
 #define JOY_CMD_ROLL_MAX 0.4          // rad
 
-#define JOY_STATE_TOTAL_STATES 3
+#define JOY_STATE_TOTAL_STATES 2
 // state list
 // follow gait.info
 // 0 stance             (default)
@@ -86,8 +86,6 @@ class ROSJoyProcessor {
         gaitCommand = "stance";
       } else if (joy_cmd_ctrl_state == 1) {
         gaitCommand = "trot";
-      } else if (joy_cmd_ctrl_state == 2) {
-        gaitCommand = "flying_trot";
       } else {
         gaitCommand = "stance";
       }

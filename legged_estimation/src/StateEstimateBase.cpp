@@ -21,6 +21,10 @@ StateEstimateBase::StateEstimateBase(PinocchioInterface pinocchioInterface, Cent
   odomPub_.reset(new realtime_tools::RealtimePublisher<nav_msgs::Odometry>(nh, "odom", 10));
 
   posePub_.reset(new realtime_tools::RealtimePublisher<geometry_msgs::PoseWithCovarianceStamped>(nh, "pose", 10));
+
+  // zyxOffset_(0) = 0.142183;
+  // zyxOffset_(1) = -0.0223472;
+  // zyxOffset_(2) = -0.00394531;
 }
 
 void StateEstimateBase::updateJointStates(const vector_t& jointPos, const vector_t& jointVel) {

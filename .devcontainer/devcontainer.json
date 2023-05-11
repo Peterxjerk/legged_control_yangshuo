@@ -17,6 +17,7 @@
 	"runArgs": [
 		"--network=host",
 		"--privileged",
+		"--ulimit rtprio=99",
 		"--cap-add=IPC_LOCK",
 		"--cap-add=sys_nice",
 		"--device=/dev/input",

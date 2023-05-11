@@ -77,6 +77,9 @@ void UnitreeHW::read(const ros::Time& currTime /*time*/, const ros::Duration& /*
   imuData_.linearAcc_[1] = lowState_.imu.accelerometer[1];
   imuData_.linearAcc_[2] = lowState_.imu.accelerometer[2];
 
+  // Eigen::Quaterniond quat(imuData_.ori_[3], imuData_.ori_[0], imuData_.ori_[1], imuData_.ori_[2]);
+  // std::cout << quatToZyx(quat).transpose() << std::endl;
+
   // a temporary logic for Go1, may not work well if the robot stands up
   // initially. record the first contact force reading as contact force bias
   if (first_contact_force_read == false) {

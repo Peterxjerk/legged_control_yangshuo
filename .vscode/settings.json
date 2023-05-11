@@ -59,7 +59,17 @@
         "thread": "cpp",
         "typeinfo": "cpp",
         "__nullptr": "cpp",
-        "__locale": "cpp"
+        "__locale": "cpp",
+        "complex": "cpp",
+        "strstream": "cpp",
+        "cinttypes": "cpp",
+        "list": "cpp",
+        "map": "cpp",
+        "set": "cpp",
+        "iostream": "cpp",
+        "cfenv": "cpp",
+        "typeindex": "cpp",
+        "variant": "cpp"
     },
     "clang-format.executable": "/usr/local/share/cmake_clang_tools/.clang-format"
 }

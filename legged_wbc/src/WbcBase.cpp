@@ -24,6 +24,9 @@ WbcBase::WbcBase(const PinocchioInterface& pinocchioInterface, CentroidalModelIn
   numDecisionVars_ = info_.generalizedCoordinatesNum + 3 * info_.numThreeDofContacts + info_.actuatedDofNum;
   qMeasured_ = vector_t(info_.generalizedCoordinatesNum);
   vMeasured_ = vector_t(info_.generalizedCoordinatesNum);
+  qDesired_ = vector_t(info_.generalizedCoordinatesNum);
+  vDesired_ = vector_t(info_.generalizedCoordinatesNum);
+  for (int i = 0; i < 4; i++) average_stance_time[i] = 0.0;
 }
 
 vector_t WbcBase::update(const vector_t& stateDesired, const vector_t& inputDesired, const vector_t& rbdStateMeasured, size_t mode,
@@ -182,16 +185,16 @@ Task WbcBase::formulateBaseAccelTask(const vector_t& stateDesired, const vector_
 
   const auto& model = pinocchioInterfaceDesired_.getModel();
   auto& data = pinocchioInterfaceDesired_.getData();
-  const auto qDesired = mapping_.getPinocchioJointPosition(stateDesired);
-  const vector_t vDesired = mapping_.getPinocchioJointVelocity(stateDesired, inputDesired);
+  qDesired_ = mapping_.getPinocchioJointPosition(stateDesired);
+  vDesired_ = mapping_.getPinocchioJointVelocity(stateDesired, inputDesired);
 
   const auto& A = getCentroidalMomentumMatrix(pinocchioInterfaceDesired_);
   const Matrix6 Ab = A.template leftCols<6>();
   const auto AbInv = computeFloatingBaseCentroidalMomentumMatrixInverse(Ab);
   const auto Aj = A.rightCols(info_.actuatedDofNum);
-  const auto ADot = pinocchio::dccrba(model, data, qDesired, vDesired);
+  const auto ADot = pinocchio::dccrba(model, data, qDesired_, vDesired_);
   Vector6 centroidalMomentumRate = info_.robotMass * getNormalizedCentroidalMomentumRate(pinocchioInterfaceDesired_, info_, inputDesired);
-  centroidalMomentumRate.noalias() -= ADot * vDesired;
+  centroidalMomentumRate.noalias() -= ADot * vDesired_;
   centroidalMomentumRate.noalias() -= Aj * jointAccel;
 
   Vector6 b = AbInv * centroidalMomentumRate;
@@ -213,7 +216,19 @@ Task WbcBase::formulateSwingLegTask() {
   b.setZero();
   size_t j = 0;
   for (size_t i = 0; i < info_.numThreeDofContacts; ++i) {
+    // std::cout << "contactFlag_[i]" << contactFlag_[i] << std::endl;
     if (!contactFlag_[i]) {
+      // raibert strategy, modify posDesired according to vMeasured_
+      double k = std::sqrt(std::abs(qMeasured_(2)) / 9.8);
+      double delta_x = k * (vMeasured_(0) - vDesired_(0)) + average_stance_time[i] * vDesired_(0);
+      double delta_y = k * (vMeasured_(1) - vDesired_(1)) + average_stance_time[i] * vDesired_(1);
+      posDesired[i](0) += delta_x;
+      posDesired[i](1) += delta_y;
+
+      // std::cout << "k" << k << std::endl;
+      // std::cout << "delta_x" << delta_x << std::endl;
+      // std::cout << "delta_y" << delta_y << std::endl;
+
       vector3_t accel = swingKp_ * (posDesired[i] - posMeasured[i]) + swingKd_ * (velDesired[i] - velMeasured[i]);
       a.block(3 * j, 0, 3, info_.generalizedCoordinatesNum) = j_.block(3 * i, 0, 3, info_.generalizedCoordinatesNum);
       b.segment(3 * j, 3) = accel - dj_.block(3 * i, 0, 3, info_.generalizedCoordinatesNum) * vMeasured_;
@@ -267,4 +282,11 @@ void WbcBase::loadTasksSetting(const std::string& taskFile, bool verbose) {
   loadData::loadPtreeValue(pt, swingKd_, prefix + "kd", verbose);
 }
 
+void WbcBase::setStanceTime(const double stance_time[]) {
+  // std::cout << "setStanceTime" << std::endl;
+  for (int j = 0; j < 4; j++) {
+    average_stance_time[j] = stance_time[j];
+    // std::cout << average_stance_time[j] << std::endl;
+  }
+}
 }  // namespace legged

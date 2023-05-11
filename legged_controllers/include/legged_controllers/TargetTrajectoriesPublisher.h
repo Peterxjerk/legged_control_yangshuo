@@ -88,7 +88,6 @@ class TargetTrajectoriesPublisher final {
     rosJoy = new ROSJoyProcessor(nh, gaitFile, topicPrefix);
     ros::Time prev = ros::Time::now();
     ros::Time now = ros::Time::now();
-    ros::Duration dt(0);
     joyThread_ = std::thread([&]() {
       while (ros::ok()) {
         if (latestObservation_.time == 0.0) {
@@ -110,6 +109,7 @@ class TargetTrajectoriesPublisher final {
         } catch (const std::exception& e) {
           ROS_ERROR_STREAM("[ros JOY] Error : " << e.what());
         }
+        ros::Duration(0.01).sleep();
       }
     });
   }
